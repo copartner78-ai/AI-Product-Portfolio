@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fine-Tuning Concepts Playground</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a472a;
+            --primary-light: #2d5c3f;
+            --accent: #ff6b35;
+            --accent-light: #ff8c5a;
+            --bg-light: #f5f3f0;
+            --bg-card: #ffffff;
+            --text-dark: #1a1a1a;
+            --text-light: #666;
+            --border: #d4cfc9;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --error: #e74c3c;
+            --shadow: 0 2px 12px rgba(26, 71, 42, 0.08);
+            --shadow-lg: 0 8px 32px rgba(26, 71, 42, 0.12);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f3f0 0%, #faf8f6 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.3s; }
+        .section:nth-child(4) { animation-delay: 0.4s; }
+        .section:nth-child(5) { animation-delay: 0.5s; }
+        .section:nth-child(6) { animation-delay: 0.6s; }
+
+        h2 {
+            font-size: 1.4em;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .section-icon {
+            font-size: 1.5em;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            background: #fafaf8;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--bg-card);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(26, 71, 42, 0.15);
+            margin-top: 10px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 71, 42, 0.2);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .status-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .preset-btn {
+            background: #f5f3f0;
+            color: var(--text-dark);
+            border: 2px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.1);
+        }
+
+        .preset-btn.active {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2);
+        }
+
+        .preset-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .preset-desc {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        .slider-container {
+            margin-top: 15px;
+        }
+
+        .slider-row {
+            display: grid;
+            grid-template-columns: 1fr 100px;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(255, 107, 53, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(255, 107, 53, 0.4);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(255, 107, 53, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .param-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .param-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+
+        .explanation {
+            font-size: 0.9em;
+            color: var(--text-light);
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: #f5f3f0;
+            border-left: 3px solid var(--accent);
+            border-radius: 4px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .output-area {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-top: 15px;
+        }
+
+        .output-placeholder {
+            color: #666;
+            font-style: italic;
+        }
+
+        .output-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .info-item {
+            padding: 10px 12px;
+            background: #f5f3f0;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .footer-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            margin-top: 40px;
+        }
+
+        .footer-section h2 {
+            color: white;
+        }
+
+        .learning-card {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .learning-card h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .learning-card p {
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+
+        .learning-card ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .learning-card li {
+            margin-bottom: 8px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table th {
+            background: rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .run-button {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .run-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        code {
+            background: #f5f3f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+        }
+
+        .footer-section code {
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--accent-light);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧬 Fine-Tuning Concepts Playground</h1>
+            <p class="subtitle">Learn how inference controls shape AI responses without real fine-tuning</p>
+        </header>
+
+        <!-- Section 1: API Key Setup -->
+        <div class="section">
+            <h2><span class="section-icon">🔐</span> API Key Setup</h2>
+            <p style="margin-bottom: 15px; color: var(--text-light);">
+                To use this playground, you'll need a Gemini API key. Get one free at 
+                <strong><a href="https://makersuite.google.com/app/apikey" target="_blank" style="color: var(--accent);">Google AI Studio</a></strong>.
+            </p>
+            <label for="apiKey">Your API Key:</label>
+            <input type="password" id="apiKey" placeholder="Enter your Gemini API key here..." />
+            <button id="validateBtn" onclick="validateApiKey()">Validate API Key</button>
+            <div id="apiStatus"></div>
+        </div>
+
+        <!-- Section 2: Model Selection -->
+        <div class="section">
+            <h2><span class="section-icon">🧠</span> Model Selection</h2>
+            <label for="modelSelect">Select Model:</label>
+            <select id="modelSelect" disabled>
+                <option>Validate API key first...</option>
+            </select>
+            <div id="modelStatus"></div>
+        </div>
+
+        <!-- Section 3: Response Style Presets -->
+        <div class="section">
+            <h2><span class="section-icon">🎭</span> Response Style</h2>
+            <p style="margin-bottom: 15px; color: var(--text-light);">
+                Choose a preset personality. This auto-fills temperature, top-p, top-k, and instructions.
+            </p>
+            <div class="preset-buttons">
+                <button class="preset-btn active" onclick="selectPreset('innovative')">
+                    <div class="preset-name">💡 Innovative Thinker</div>
+                    <div class="preset-desc">Creative & explorative</div>
+                </button>
+                <button class="preset-btn" onclick="selectPreset('factual')">
+                    <div class="preset-name">📊 Factual & Precise</div>
+                    <div class="preset-desc">Accurate & structured</div>
+                </button>
+                <button class="preset-btn" onclick="selectPreset('funny')">
+                    <div class="preset-name">😄 Funny Kid</div>
+                    <div class="preset-desc">Playful & lighthearted</div>
+                </button>
+                <button class="preset-btn" onclick="selectPreset('pm')">
+                    <div class="preset-name">👔 Product Manager</div>
+                    <div class="preset-desc">Strategic & data-driven</div>
+                </button>
+                <button class="preset-btn" onclick="selectPreset('fact-teller')">
+                    <div class="preset-name">⚡ No-Nonsense</div>
+                    <div class="preset-desc">Direct & concise</div>
+                </button>
+                <button class="preset-btn" onclick="selectPreset('custom')">
+                    <div class="preset-name">✏️ Custom</div>
+                    <div class="preset-desc">Your own settings</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 4: Hyperparameter Controls -->
+        <div class="section">
+            <h2><span class="section-icon">🎛️</span> Model Controls (Inference Tuning)</h2>
+
+            <label>Temperature:</label>
+            <div class="param-label">
+                <span>Controls randomness & creativity (0 = predictable, 1.5 = wild)</span>
+                <span id="tempValue">1.0</span>
+            </div>
+            <div class="slider-row">
+                <input type="range" id="temperature" min="0" max="1.5" step="0.1" value="1.0" 
+                       oninput="updateSliders('temperature')">
+                <input type="number" id="temperatureNum" min="0" max="1.5" step="0.1" value="1.0"
+                       oninput="updateSliders('temperatureNum')">
+            </div>
+            <div class="explanation">
+                <strong>Temperature:</strong> Lower = focused, predictable answers. Higher = creative, surprising answers. Try 0.2 for factual tasks, 1.0 for creative ones.
+            </div>
+
+            <label style="margin-top: 30px;">Top-P (Nucleus Sampling):</label>
+            <div class="param-label">
+                <span>Controls vocabulary diversity (0 = single word, 1 = all words)</span>
+                <span id="topPValue">0.9</span>
+            </div>
+            <div class="slider-row">
+                <input type="range" id="topP" min="0" max="1" step="0.05" value="0.9"
+                       oninput="updateSliders('topP')">
+                <input type="number" id="topPNum" min="0" max="1" step="0.05" value="0.9"
+                       oninput="updateSliders('topPNum')">
+            </div>
+            <div class="explanation">
+                <strong>Top-P:</strong> Instead of temperature, this limits choices to the "top probable words" by cumulative probability. 0.9 means "pick from words that make up 90% of the probability mass."
+            </div>
+
+            <label style="margin-top: 30px;">Top-K:</label>
+            <div class="param-label">
+                <span>Only consider top K most likely words</span>
+                <span id="topKValue">40</span>
+            </div>
+            <div class="slider-row">
+                <input type="range" id="topK" min="1" max="100" step="1" value="40"
+                       oninput="updateSliders('topK')">
+                <input type="number" id="topKNum" min="1" max="100" step="1" value="40"
+                       oninput="updateSliders('topKNum')">
+            </div>
+            <div class="explanation">
+                <strong>Top-K:</strong> Only choose from the K most probable next words. E.g., top-20 means "pick from the 20 most likely words." Good for preventing really weird outputs.
+            </div>
+
+            <label style="margin-top: 30px;">Max Output Tokens:</label>
+            <div class="param-label">
+                <span>Maximum length of the response (1 token ≈ 4 characters)</span>
+                <span id="maxTokensValue">256</span>
+            </div>
+            <div class="slider-row">
+                <input type="range" id="maxTokens" min="50" max="2048" step="50" value="256"
+                       oninput="updateSliders('maxTokens')">
+                <input type="number" id="maxTokensNum" min="50" max="2048" step="50" value="256"
+                       oninput="updateSliders('maxTokensNum')">
+            </div>
+            <div class="explanation">
+                <strong>Max Tokens:</strong> Hard limit on response length. Higher = longer responses possible, but not guaranteed. Costs a bit more.
+            </div>
+        </div>
+
+        <!-- Section 5: Instruction & Prompt -->
+        <div class="section">
+            <h2><span class="section-icon">💭</span> Instruction & Prompt</h2>
+
+            <label for="systemPrompt">System / Instruction Prompt:</label>
+            <p style="margin-bottom: 10px; color: var(--text-light); font-size: 0.95em;">
+                This is the "personality" you're giving the model. It shapes how the model interprets and responds.
+            </p>
+            <textarea id="systemPrompt" placeholder="You are a helpful AI assistant..."></textarea>
+
+            <label for="userPrompt" style="margin-top: 25px;">Your Prompt (Question):</label>
+            <p style="margin-bottom: 10px; color: var(--text-light); font-size: 0.95em;">
+                Ask your question here. The system prompt + this prompt together determine the response.
+            </p>
+            <textarea id="userPrompt" placeholder="Ask anything! Try to see how the settings change the answer..."></textarea>
+
+            <button class="run-button" id="runBtn" onclick="generateResponse()" disabled>
+                ▶ Run Prompt
+            </button>
+        </div>
+
+        <!-- Section 6: Output -->
+        <div class="section">
+            <h2><span class="section-icon">📤</span> Model Output</h2>
+            <div id="outputContainer">
+                <div class="output-area">
+                    <span class="output-placeholder">Output will appear here...</span>
+                </div>
+                <div class="output-info">
+                    <div class="info-item">
+                        <div class="info-label">Model Used:</div>
+                        <div id="usedModel">—</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Latency:</div>
+                        <div id="latency">—</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 7: Educational Footer -->
+        <div class="footer-section">
+            <h2 style="color: white;">📘 Understanding Fine-Tuning (Simple Explanation)</h2>
+
+            <div class="learning-card">
+                <h3>🌡️ What is Temperature?</h3>
+                <p>
+                    Imagine a model is trying to pick the next word. It has probabilities for every word in the dictionary.
+                </p>
+                <p>
+                    <strong>Temperature</strong> controls how much the model "sharpens" or "flattens" those probabilities:
+                </p>
+                <ul>
+                    <li><strong>Temperature = 0:</strong> Always pick the single most likely word (deterministic, boring, predictable)</li>
+                    <li><strong>Temperature = 1:</strong> Use probabilities as-is (balanced)</li>
+                    <li><strong>Temperature = 2:</strong> Flatten probabilities a lot (picks weird, unlikely words more often)</li>
+                </ul>
+                <p style="margin-top: 10px;">
+                    <em>Analogy:</em> Temperature is like a volume knob on randomness. Turn it up = more creative chaos. Turn it down = more predictable, focused.
+                </p>
+            </div>
+
+            <div class="learning-card">
+                <h3>📏 What are Top-P and Top-K?</h3>
+                <p><strong>Top-K:</strong> Only consider the K most probable words. If top-K=10, the model picks from the 10 most likely next words.</p>
+                <p><strong>Top-P (Nucleus):</strong> Pick from the smallest set of words whose cumulative probability is at least P. If top-P=0.9, find the words that make up 90% of the probability and pick from only those.</p>
+                <p>
+                    <em>Why use them?</em> They prevent the model from picking <em>really weird</em> words while still allowing creativity. Temperature alone can sometimes pick statistically plausible but semantically nonsensical words.
+                </p>
+            </div>
+
+            <div class="learning-card">
+                <h3>🎓 Why This Playground is NOT Real Fine-Tuning</h3>
+                <p>
+                    This playground changes how the model <strong>generates</strong> text at inference time. It does NOT change the model's learned knowledge or behaviors.
+                </p>
+                <p>
+                    Real fine-tuning would:
+                </p>
+                <ul>
+                    <li>Take a base model and thousands of labeled examples</li>
+                    <li>Train it on new data to learn new patterns</li>
+                    <li>Update the model's internal weights permanently</li>
+                    <li>Cost money and time</li>
+                </ul>
+                <p style="margin-top: 10px;">
+                    What we're doing here is like changing the settings on a camera. We're not rebuilding the camera.
+                </p>
+            </div>
+
+            <div class="learning-card">
+                <h3>🔄 Three Ways to Customize LLM Behavior</h3>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Technique</th>
+                        <th>Cost</th>
+                        <th>Time</th>
+                        <th>Permanence</th>
+                        <th>What It Does</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Prompt Engineering</strong></td>
+                        <td>Free</td>
+                        <td>Minutes</td>
+                        <td>Per-request</td>
+                        <td>Craft the instruction to get desired behavior</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Inference Tuning</strong></td>
+                        <td>Free</td>
+                        <td>Instant</td>
+                        <td>Per-request</td>
+                        <td>Change temperature, top-p, top-k (this playground!)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fine-Tuning</strong></td>
+                        <td>$$$</td>
+                        <td>Hours</td>
+                        <td>Permanent</td>
+                        <td>Update model weights with labeled examples</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="learning-card">
+                <h3>🔐 About API Keys & Security</h3>
+                <p>
+                    Your API key is secret. It's like a password. Anyone with your key can:
+                </p>
+                <ul>
+                    <li>Use your API quota</li>
+                    <li>Spend your money</li>
+                    <li>Access your account</li>
+                </ul>
+                <p style="margin-top: 10px;">
+                    <strong>Best practice:</strong> Never commit API keys to public code repos. If you accidentally expose one, regenerate it immediately.
+                </p>
+                <p>
+                    In production, API keys should be stored as environment variables or secrets, not hardcoded.
+                </p>
+            </div>
+
+            <div class="learning-card">
+                <h3>💡 Key Takeaways</h3>
+                <ul>
+                    <li>Inference controls (temperature, top-p, top-k) let you tune output on the fly</li>
+                    <li>They're different from prompt engineering (different tools, same goal)</li>
+                    <li>Real fine-tuning is a separate, much bigger process</li>
+                    <li>This playground shows you what inference control does to a real model</li>
+                    <li>Play with the sliders! See how changing settings changes the output</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // STATE & CONFIGURATION
+        // ============================================
+
+        const PRESETS = {
+            innovative: {
+                name: "Innovative Thinker",
+                temperature: 1.2,
+                topP: 0.95,
+                topK: 50,
+                instruction: "You are a creative, imaginative AI assistant. Think outside the box. Explore unexpected connections and novel ideas. Be bold and speculative. Challenge assumptions. Embrace ambiguity and complexity."
+            },
+            factual: {
+                name: "Factual & Precise",
+                temperature: 0.2,
+                topP: 0.8,
+                topK: 20,
+                instruction: "You are a precise, fact-based AI assistant. Prioritize accuracy and clarity. Cite sources when relevant. Distinguish between facts and opinions. Avoid speculation without evidence. Be structured and organized."
+            },
+            funny: {
+                name: "Funny Kid (8–10 years old)",
+                temperature: 1.0,
+                topP: 0.9,
+                topK: 40,
+                instruction: "You are a playful, silly AI that talks like a smart 8-10 year old. Make jokes, puns, and funny observations. Be enthusiastic. Use simple words. Include emojis sometimes. Have fun!"
+            },
+            pm: {
+                name: "Informed Product Manager",
+                temperature: 0.5,
+                topP: 0.85,
+                topK: 30,
+                instruction: "You are a strategic product manager. Analyze situations from user, business, and technical perspectives. Consider tradeoffs. Focus on outcomes and metrics. Be data-driven but also consider qualitative insights."
+            },
+            "fact-teller": {
+                name: "No-Nonsense Fact Teller",
+                temperature: 0.1,
+                topP: 0.7,
+                topK: 10,
+                instruction: "You are direct and no-nonsense. Answer concisely. Stick to facts. No fluff, no apologies, no extra words. Just the essential information."
+            },
+            custom: {
+                name: "Custom",
+                temperature: 1.0,
+                topP: 0.9,
+                topK: 40,
+                instruction: "You are a helpful AI assistant."
+            }
+        };
+
+        let appState = {
+            apiKey: "",
+            apiValid: false,
+            modelSelected: null,
+            availableModels: [],
+            currentPreset: "innovative"
+        };
+
+        // ============================================
+        // API KEY VALIDATION
+        // ============================================
+
+        async function validateApiKey() {
+            const key = document.getElementById('apiKey').value.trim();
+            const statusDiv = document.getElementById('apiStatus');
+
+            if (!key) {
+                setStatus(statusDiv, 'error', '❌ Please enter an API key.');
+                return;
+            }
+
+            appState.apiKey = key;
+            setStatus(statusDiv, 'info', '<span class="status-spinner"></span> Validating API key...');
+
+            try {
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`
+                );
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || 'Invalid API key or quota exceeded.');
+                }
+
+                const data = await response.json();
+                appState.apiValid = true;
+                appState.availableModels = data.models || [];
+
+                setStatus(statusDiv, 'success', '✅ API Key is valid!');
+                loadModels();
+                document.getElementById('runBtn').disabled = false;
+            } catch (error) {
+                appState.apiValid = false;
+                setStatus(statusDiv, 'error', `❌ ${error.message}`);
+                document.getElementById('runBtn').disabled = true;
+            }
+        }
+
+        function loadModels() {
+            const modelSelect = document.getElementById('modelSelect');
+            const statusDiv = document.getElementById('modelStatus');
+            const genModels = appState.availableModels.filter(m => m.name.includes('gemini'));
+
+            if (genModels.length === 0) {
+                setStatus(statusDiv, 'warning', '⚠️ No generative models found. Check your quota or API key.');
+                return;
+            }
+
+            modelSelect.innerHTML = '';
+            genModels.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model.name;
+                option.textContent = model.displayName || model.name;
+                modelSelect.appendChild(option);
+            });
+
+            modelSelect.disabled = false;
+            appState.modelSelected = modelSelect.value;
+            setStatus(statusDiv, 'success', `✅ Found ${genModels.length} model(s). Ready to generate!`);
+        }
+
+        // ============================================
+        // PRESET SELECTION
+        // ============================================
+
+        function selectPreset(presetKey) {
+            appState.currentPreset = presetKey;
+            const preset = PRESETS[presetKey];
+
+            // Update UI
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.preset-btn').classList.add('active');
+
+            // Update sliders and text
+            document.getElementById('temperature').value = preset.temperature;
+            document.getElementById('temperatureNum').value = preset.temperature;
+            document.getElementById('tempValue').textContent = preset.temperature.toFixed(1);
+
+            document.getElementById('topP').value = preset.topP;
+            document.getElementById('topPNum').value = preset.topP;
+            document.getElementById('topPValue').textContent = preset.topP.toFixed(2);
+
+            document.getElementById('topK').value = preset.topK;
+            document.getElementById('topKNum').value = preset.topK;
+            document.getElementById('topKValue').textContent = preset.topK;
+
+            document.getElementById('systemPrompt').value = preset.instruction;
+        }
+
+        // ============================================
+        // SLIDER SYNCHRONIZATION
+        // ============================================
+
+        function updateSliders(source) {
+            const pairs = {
+                temperature: ['temperature', 'temperatureNum', 'tempValue'],
+                temperatureNum: ['temperature', 'temperatureNum', 'tempValue'],
+                topP: ['topP', 'topPNum', 'topPValue'],
+                topPNum: ['topP', 'topPNum', 'topPValue'],
+                topK: ['topK', 'topKNum', 'topKValue'],
+                topKNum: ['topK', 'topKNum', 'topKValue'],
+                maxTokens: ['maxTokens', 'maxTokensNum', 'maxTokensValue'],
+                maxTokensNum: ['maxTokens', 'maxTokensNum', 'maxTokensValue']
+            };
+
+            const [slider, input, display] = pairs[source] || [];
+            if (!slider) return;
+
+            const value = parseFloat(document.getElementById(source).value);
+            document.getElementById(slider).value = value;
+            document.getElementById(input).value = value;
+
+            if (display === 'tempValue') {
+                document.getElementById(display).textContent = value.toFixed(1);
+            } else if (display === 'topPValue') {
+                document.getElementById(display).textContent = value.toFixed(2);
+            } else {
+                document.getElementById(display).textContent = Math.round(value);
+            }
+        }
+
+        // ============================================
+        // GENERATE RESPONSE
+        // ============================================
+
+        async function generateResponse() {
+            if (!appState.apiValid || !appState.apiKey) {
+                alert('Please validate your API key first.');
+                return;
+            }
+
+            const userPrompt = document.getElementById('userPrompt').value.trim();
+            if (!userPrompt) {
+                alert('Please enter a prompt.');
+                return;
+            }
+
+            const systemPrompt = document.getElementById('systemPrompt').value.trim();
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const topP = parseFloat(document.getElementById('topP').value);
+            const topK = parseInt(document.getElementById('topK').value);
+            const maxTokens = parseInt(document.getElementById('maxTokens').value);
+
+            const outputArea = document.querySelector('.output-area');
+            const runBtn = document.getElementById('runBtn');
+            const startTime = Date.now();
+
+            outputArea.innerHTML = '<span class="status-spinner"></span> Generating response...';
+            runBtn.disabled = true;
+
+            try {
+                const model = appState.modelSelected || document.getElementById('modelSelect').value;
+                const response = await callGeminiAPI(
+                    model,
+                    systemPrompt,
+                    userPrompt,
+                    temperature,
+                    topP,
+                    topK,
+                    maxTokens
+                );
+
+                const latency = ((Date.now() - startTime) / 1000).toFixed(2);
+                outputArea.textContent = response.text;
+
+                document.getElementById('usedModel').textContent = response.modelUsed || model;
+                document.getElementById('latency').textContent = `${latency}s`;
+
+            } catch (error) {
+                outputArea.innerHTML = `<span style="color: #ff6b6b;">❌ Error:</span> ${error.message}`;
+                document.getElementById('usedModel').textContent = '—';
+                document.getElementById('latency').textContent = '—';
+            } finally {
+                runBtn.disabled = false;
+            }
+        }
+
+        async function callGeminiAPI(model, systemPrompt, userPrompt, temperature, topP, topK, maxTokens) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${appState.apiKey}`;
+
+            const body = {
+                contents: [
+                    {
+                        role: "user",
+                        parts: [
+                            {
+                                text: `${systemPrompt}\n\n${userPrompt}`
+                            }
+                        ]
+                    }
+                ],
+                generationConfig: {
+                    temperature: temperature,
+                    topP: topP,
+                    topK: topK,
+                    maxOutputTokens: maxTokens
+                },
+                safetySettings: [
+                    {
+                        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                        threshold: "BLOCK_NONE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_HATE_SPEECH",
+                        threshold: "BLOCK_NONE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_HARASSMENT",
+                        threshold: "BLOCK_NONE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                        threshold: "BLOCK_NONE"
+                    }
+                ]
+            };
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                const errorMsg = errorData.error?.message || 'Unknown API error';
+                throw new Error(formatErrorMessage(errorMsg));
+            }
+
+            const data = await response.json();
+
+            if (!data.candidates || data.candidates.length === 0) {
+                throw new Error('No candidates returned. The model may have blocked the response due to safety filters.');
+            }
+
+            const candidate = data.candidates[0];
+            if (candidate.finishReason === 'SAFETY') {
+                throw new Error('Response was blocked by safety filters. Try adjusting your prompt.');
+            }
+
+            if (!candidate.content || !candidate.content.parts || candidate.content.parts.length === 0) {
+                throw new Error('Empty response from model. Try a different prompt.');
+            }
+
+            return {
+                text: candidate.content.parts[0].text,
+                modelUsed: model
+            };
+        }
+
+        function formatErrorMessage(msg) {
+            if (msg.includes('INVALID_ARGUMENT')) {
+                return 'Invalid request. Check your parameters (temperature, top-p, etc.)';
+            }
+            if (msg.includes('PERMISSION_DENIED')) {
+                return 'Permission denied. Check your API key and quota.';
+            }
+            if (msg.includes('RESOURCE_EXHAUSTED')) {
+                return 'API quota exceeded. Wait a moment or check your billing.';
+            }
+            return msg;
+        }
+
+        // ============================================
+        // UTILITIES
+        // ============================================
+
+        function setStatus(element, type, message) {
+            element.className = `status status-${type}`;
+            element.innerHTML = message;
+        }
+
+        // Initialize with default preset
+        window.addEventListener('load', () => {
+            selectPreset('innovative');
+        });
+    </script>
+</body>
+</html>
